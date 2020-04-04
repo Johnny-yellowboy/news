@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+// import axios from 'axios'
 export default {
   data() {
     return {
@@ -53,25 +53,25 @@ export default {
     login() {
       this.$refs.form.validate(valid => {
         if (valid) {
-          axios({
+          this.axios({
             method: 'post',
-            url: 'http://localhost:8888/api/private/v1/login',
+            url: 'login',
             data: this.form
           }).then(res => {
             console.log(res)
-            if (res.data.meta.status === 200) {
+            if (res.meta.status === 200) {
               this.$message({
                 showClose: true,
                 message: '恭喜你，登录成功',
                 type: 'success'
               })
               // 存储后台给的token
-              localStorage.setItem('token', res.data.data.token)
+              localStorage.setItem('token', res.data.token)
               this.$router.push('/home')
             } else {
               this.$message({
                 showClose: true,
-                message: res.data.meta.msg,
+                message: res.meta.msg,
                 type: 'warning'
               })
             }

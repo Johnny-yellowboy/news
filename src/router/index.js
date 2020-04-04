@@ -2,12 +2,9 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Login from 'components/Login'
 import Home from 'components/Home'
-import ElementUI from 'element-ui'
-import 'element-ui/lib/theme-chalk/index.css'
-import '@/assets/base.css'
+import Users from 'components/Users'
 
 Vue.use(Router)
-Vue.use(ElementUI)
 
 const router = new Router({
   routes: [
@@ -21,7 +18,13 @@ const router = new Router({
     },
     {
       path: '/home',
-      component: Home
+      component: Home,
+      children: [
+        {
+          path: '/users',
+          component: Users
+        }
+      ]
     }
   ]
 })

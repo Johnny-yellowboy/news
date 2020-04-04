@@ -2,9 +2,11 @@
   <el-container class="home">
     <el-header>
       <div class="fl logo"></div>
-      <div class="fl title"><h1>后台管理系统</h1></div>
+      <div class="fl title">
+        <h1>后台管理系统</h1>
+      </div>
       <div class="fr">
-        欢迎您：
+        欢迎光临
         <a href="javascript:;" class="login-out" @click="loginOut">退出</a>
       </div>
     </el-header>
@@ -17,13 +19,14 @@
           text-color="#fff"
           active-text-color="#ffd04b"
           unique-opened
+          router
         >
           <el-submenu index="1">
             <template slot="title">
               <i class="el-icon-user-solid"></i>
               <span>用户管理</span>
             </template>
-            <el-menu-item index="1-1">
+            <el-menu-item index="users">
               <i class="el-icon-menu"></i>
               <span slot="title">用户列表</span>
             </el-menu-item>
@@ -58,7 +61,9 @@
           </el-submenu>
         </el-menu>
       </el-aside>
-      <el-main>Main</el-main>
+      <el-main>
+        <router-view></router-view>
+      </el-main>
     </el-container>
   </el-container>
 </template>
@@ -66,26 +71,27 @@
 <script>
 export default {
   methods: {
-    loginOut() {
-      this.$confirm('你确定要退出吗?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      })
-        .then(() => {
-          this.$message({
-            type: 'success',
-            message: '退出成功!'
-          })
-          localStorage.removeItem('token')
-          this.$router.push('/login')
+    async loginOut() {
+      try {
+        await this.$confirm('你确定要退出吗?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
         })
-        .catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消退出'
-          })
+        // .then(() => {
+        this.$message({
+          type: 'success',
+          message: '退出成功!'
         })
+        localStorage.removeItem('token')
+        this.$router.push('/login')
+        // })
+      } catch (e) {
+        this.$message({
+          type: 'info',
+          message: '已取消退出'
+        })
+      }
     }
   }
 }
@@ -112,8 +118,6 @@ export default {
   .el-main {
     background-color: #e9eef3;
     color: #333;
-    text-align: center;
-    line-height: 160px;
   }
   .logo {
     width: 180px;
