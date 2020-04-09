@@ -1,6 +1,6 @@
 <template>
   <div class="users">
-    <el-breadcrumb separator-class="el-icon-arrow-right" class="bread">
+    <el-breadcrumb separator-class="el-icon-arrow-right">
       <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
       <el-breadcrumb-item :to="{ path: '/users' }">用户列表</el-breadcrumb-item>
     </el-breadcrumb>
@@ -32,10 +32,17 @@
             @click="showEditDialog(scope.row)"
           ></el-button>
           <el-button type="danger" icon="el-icon-delete" size="mini" @click="delUser(scope.row.id)"></el-button>
-          <el-button type="success" icon="el-icon-arrow-down" size="mini" plain>分配角色</el-button>
+          <el-button
+            type="success"
+            icon="el-icon-arrow-down"
+            size="mini"
+            plain
+            @click="showAssignUser(scope.row)"
+          >分配角色</el-button>
         </template>
       </el-table-column>
     </el-table>
+    <!-- 分页 -->
     <el-pagination
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
@@ -46,18 +53,19 @@
       layout="total, sizes, prev, pager, next, jumper"
       :total="total"
     ></el-pagination>
+    <!-- 弹窗 -->
     <el-dialog title="添加用户" :visible.sync="addDialogVisible" width="40%">
       <el-form :model="addfrom" :rules="rules" ref="addfrom">
-        <el-form-item label="用户名" :label-width="formLabelWidth" prop="username">
+        <el-form-item label="用户名" label-width="100px" prop="username">
           <el-input v-model="addfrom.username" placeholder="请输入用户名"></el-input>
         </el-form-item>
-        <el-form-item label="密码" :label-width="formLabelWidth" prop="password">
+        <el-form-item label="密码" label-width="100px" prop="password">
           <el-input v-model="addfrom.password" placeholder="请输入密码"></el-input>
         </el-form-item>
-        <el-form-item label="邮箱" :label-width="formLabelWidth" prop="email">
+        <el-form-item label="邮箱" label-width="100px" prop="email">
           <el-input v-model="addfrom.email" placeholder="请输入邮箱"></el-input>
         </el-form-item>
-        <el-form-item label="手机" :label-width="formLabelWidth" prop="mobile">
+        <el-form-item label="手机" label-width="100px" prop="mobile">
           <el-input v-model="addfrom.mobile" placeholder="请输入手机号"></el-input>
         </el-form-item>
       </el-form>
@@ -81,6 +89,27 @@
       <div slot="footer" class="dialog-footer">
         <el-button @click="editDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="editUser">确 定</el-button>
+      </div>
+    </el-dialog>
+    <el-dialog title="分配角色" width="40%" :visible.sync="assignDialogVisible">
+      <el-form :model="assignform">
+        <el-form-item label="用户名" prop="username" label-width="100px">
+          <el-input v-model="assignform.username" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="角色列表" prop="userlist" label-width="100px">
+          <el-select v-model="assignform.selectValue" placeholder="请选择">
+            <el-option
+              v-for="item in assignform.userlist"
+              :key="item.id"
+              :label="item.roleName"
+              :value="item.id"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="assignDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="assignUser">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -135,6 +164,13 @@ export default {
         username: '',
         email: '',
         mobile: ''
+      },
+      assignDialogVisible: false,
+      assignform: {
+        id: '',
+        username: '',
+        userlist: [],
+        selectValue: ''
       }
     }
   },
@@ -282,6 +318,60 @@ export default {
         }
       })
       // })
+    },
+    async showAssignUser(row) {
+      // console.log(row)
+      this.assignform.id = row.id
+      this.assignform.username = row.username
+      this.assignDialogVisible = true
+      // 根据用户id查询当前角色id
+      let info = await this.axios.get(`users/${row.id}`)
+      // console.log(info)
+      if (info.meta.status === 200) {
+        if (info.data.rid === -1) {
+          info.data.rid = ''
+        }
+        this.assignform.selectValue = info.data.rid
+      }
+
+      let res = await this.axios.get('roles')
+      let {
+        meta: { msg, status },
+        data
+      } = res
+      // console.log(res)
+
+      if (status === 200) {
+        this.assignform.userlist = data
+      } else {
+        this.$message.info(msg)
+      }
+    },
+    async assignUser() {
+      // this.axios
+      //   .put(`users/${this.assignform.id}/role`, {
+      //     rid: this.assignform.selectValue
+      //   })
+      //   .then(res => {
+      //     console.log(res)
+      //   })
+      //   .catch(error => {
+      //     console.log(error)
+      //   })
+      if (!this.assignform.selectValue) {
+        this.$message.error('请选择一个角色')
+        return
+      }
+      let res = await this.axios.put(`users/${this.assignform.id}/role`, {
+        rid: this.assignform.selectValue
+      })
+      let {
+        meta: { status, msg }
+      } = res
+      if (status === 200) {
+        this.assignDialogVisible = false
+        this.$message.success(msg)
+      }
     }
   },
   created() {
@@ -292,9 +382,6 @@ export default {
 
 <style lang="less" scoped>
 .users {
-  .bread {
-    line-height: 50px;
-  }
   .input-with-select {
     width: 400px;
     margin-bottom: 10px;

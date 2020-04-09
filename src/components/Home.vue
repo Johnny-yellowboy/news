@@ -13,7 +13,7 @@
     <el-container>
       <el-aside width="200px">
         <el-menu
-          default-active="1-1"
+          :default-active="this.$route.path.slice(1)"
           class="el-menu-vertical-demo"
           background-color="#545c64"
           text-color="#fff"
@@ -21,26 +21,33 @@
           unique-opened
           router
         >
-          <el-submenu index="1">
+          <el-submenu :data="menuList" :index="menu.path" v-for="menu in menuList" :key="menu.id">
             <template slot="title">
-              <i class="el-icon-user-solid"></i>
-              <span>用户管理</span>
+              <i class="el-icon-user-solid" v-if="menu.path =='users'"></i>
+              <i class="el-icon-s-tools" v-else-if="menu.path =='rights'"></i>
+              <i class="el-icon-menu" v-else-if="menu.path =='roles'"></i>
+              <i class="el-icon-s-goods" v-else-if="menu.path =='goods'"></i>
+              <i class="el-icon-menu" v-else-if="menu.path =='roles'"></i>
+              <i class="el-icon-s-order" v-else-if="menu.path =='orders'"></i>
+              <i class="el-icon-s-marketing" v-else-if="menu.path =='reports'"></i>
+              <!-- <i :class="menu.path =='goods'?'el-icon-s-goods':''"></i> -->
+              <span>{{menu.authName}}</span>
             </template>
-            <el-menu-item index="users">
+            <el-menu-item :index="item.path" v-for="item in menu.children" :key="item.id">
               <i class="el-icon-menu"></i>
-              <span slot="title">用户列表</span>
+              <span slot="title">{{item.authName}}</span>
             </el-menu-item>
           </el-submenu>
-          <el-submenu index="2">
+          <!-- <el-submenu index="rights">
             <template slot="title">
               <i class="el-icon-s-tools"></i>
               <span>权限管理</span>
             </template>
-            <el-menu-item index="2-1">
+            <el-menu-item index="roles">
               <i class="el-icon-menu"></i>
               <span slot="title">角色列表</span>
             </el-menu-item>
-            <el-menu-item index="2-2">
+            <el-menu-item index="rights">
               <i class="el-icon-s-operation"></i>
               <span slot="title">权限列表</span>
             </el-menu-item>
@@ -58,7 +65,7 @@
               <i class="el-icon-s-grid"></i>
               <span slot="title">商品分类</span>
             </el-menu-item>
-          </el-submenu>
+          </el-submenu>-->
         </el-menu>
       </el-aside>
       <el-main>
@@ -70,6 +77,11 @@
 
 <script>
 export default {
+  data() {
+    return {
+      menuList: []
+    }
+  },
   methods: {
     async loginOut() {
       try {
@@ -92,7 +104,23 @@ export default {
           message: '已取消退出'
         })
       }
+    },
+    async getMenuList() {
+      let res = await this.axios.get('menus')
+      console.log(res)
+      let {
+        data,
+        meta: { status }
+      } = res
+
+      if (status === 200) {
+        this.menuList = data
+      }
     }
+  },
+  created() {
+    this.getMenuList()
+    console.log(this.$route)
   }
 }
 </script>
