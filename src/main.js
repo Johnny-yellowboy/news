@@ -6,10 +6,20 @@ import router from './router'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import '@/assets/base.css'
+// 导入树形表格插件
+import ElTreeGrid from 'element-tree-grid'
+// 导入编辑器插件
+import VueQuillEditor from 'vue-quill-editor'
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
 // 配置baseUrl
 import axios from 'axios'
+import moment from 'moment'
 Vue.prototype.axios = axios
 axios.defaults.baseURL = 'http://localhost:8888/api/private/v1/'
+
+Vue.component(ElTreeGrid.name, ElTreeGrid)
 // 添加请求拦截器
 axios.interceptors.request.use(
   function(config) {
@@ -34,7 +44,12 @@ axios.interceptors.response.use(
     return Promise.reject(error)
   }
 )
+// 定义过滤器（格式化时间）
+Vue.filter('timeFilter', (data, format = 'YYYY-MM-DD HH:mm:ss') => {
+  return moment(data * 1000).format(format)
+})
 
+Vue.use(VueQuillEditor /* { default global options } */)
 Vue.use(ElementUI)
 Vue.config.productionTip = false
 

@@ -107,7 +107,7 @@ export default {
     },
     async getMenuList() {
       let res = await this.axios.get('menus')
-      console.log(res)
+      // console.log(res)
       let {
         data,
         meta: { status }
@@ -120,7 +120,7 @@ export default {
   },
   created() {
     this.getMenuList()
-    console.log(this.$route)
+    // console.log(this.$route)
   }
 }
 </script>
