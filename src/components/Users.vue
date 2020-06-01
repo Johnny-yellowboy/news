@@ -186,7 +186,7 @@ export default {
         }
       })
       // .then(res => {
-      // console.log(res)
+      console.log(res)
       if (res.meta.status === 200) {
         this.userList = res.data.users
         this.total = res.data.total

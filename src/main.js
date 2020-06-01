@@ -13,12 +13,15 @@ import VueQuillEditor from 'vue-quill-editor'
 import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
+// 导入highchart
+// import Highcharts from 'highcharts/highstock'
+import HighchartsVue from 'highcharts-vue'
 // 配置baseUrl
 import axios from 'axios'
 import moment from 'moment'
 Vue.prototype.axios = axios
 axios.defaults.baseURL = 'http://localhost:8888/api/private/v1/'
-
+// axios.defaults.baseURL = 'https://www.liulongbin.top:8888/api/private/v1'
 Vue.component(ElTreeGrid.name, ElTreeGrid)
 // 添加请求拦截器
 axios.interceptors.request.use(
@@ -52,7 +55,7 @@ Vue.filter('timeFilter', (data, format = 'YYYY-MM-DD HH:mm:ss') => {
 Vue.use(VueQuillEditor /* { default global options } */)
 Vue.use(ElementUI)
 Vue.config.productionTip = false
-
+Vue.use(HighchartsVue)
 /* eslint-disable no-new */
 new Vue({
   el: '#app',

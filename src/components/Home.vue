@@ -130,7 +130,7 @@ export default {
   height: 100%;
   .el-header,
   .el-footer {
-    background-color: #b3c0d1;
+    background-color: #9ec8ff;
     color: #333;
     text-align: center;
     line-height: 60px;
@@ -151,6 +151,8 @@ export default {
     width: 180px;
     height: 100%;
     background: url('../assets/images/logo.png') no-repeat center;
+    background-size: 90% 125%;
+    background-position-x: -20px;
   }
   .login-out {
     color: #007dbe;
